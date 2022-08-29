@@ -1,60 +1,66 @@
-import React,{Component,useState,useEffect} from 'react'
-import ReactPaginate from 'react-paginate';
+import React,{Component,useState,useEffect} from "react";
+import ReactPagination from 'react-paginate';
 
-let PER_PAGE = 10;
-
+let perPage = 10;
+let id=1;
 export default function App(){
-  const[currentPage,setCurrentPage] = useState(0)
-  const[searchTerm,setSearchTerm]=useState('');
-  const[dataa,setDataa] = useState([])
+ 
+  const[currentPage,setCurrentPage] = useState(0);
+  const[searchItem,setSearchItem] = useState("");
+  const[dataa,setDataa] = useState([]);
+
+  
+ 
   const fetchApi=()=>{
-    fetch('https://jsonplaceholder.typicode.com/todos')
+    fetch('https://jsonplaceholder.typicode.com/albums')
     .then(res=>res.json())
-    .then((data)=>{console.log(data)
+    .then((data)=>{
+      console.log(data);
       setDataa(data);
-    }
-    )
+    })
   }
-  useEffect(() => {
-    fetchApi();
-  }, []);
+  useEffect(()=>{
+    fetchApi()
+  },[])
 
   function handlePageClick({selected:selectedPage}){
-    console.log('selectedPage',selectedPage);
+    console.log('selected page',selectedPage);
     setCurrentPage(selectedPage);
-   }
-  
-   const offset = currentPage * PER_PAGE;
-  
-  
-  
-   const pageCount = Math.ceil(dataa.length/PER_PAGE);
+  }
 
+  const offset = currentPage*perPage;
+  const pageCount = Math.ceil(dataa.length/perPage);
 
+ 
   return(
     <div>
-  <input type='text' placeholder='search' onChange={event=>{setSearchTerm(event.target.value)}}/>
-    {dataa.filter((val)=>{
-      if(searchTerm==''){
-      return val;
-      }else if(val.title.toLowerCase()
-      .includes(searchTerm.toLowerCase())){
-        return val
-      }
-    }).slice(offset,offset+PER_PAGE).map((val)=>{
-      return(
-        <div><li>{val.id}</li>
-          {val.title}
-
-        </div>
-      )
-    })}
-    <ReactPaginate previousLabel={'<-Previous'}
-        nextLabel = {'Next ->'}
-        pageCount = {pageCount}
-        onPageChange={handlePageClick}
-        
-
+    <input type='text' placeholder="search...." onChange={event=>{setSearchItem(event.target.value)}}/>
+      <table>
+        <thead>
+          <tr>
+            <th>UserId</th>
+            <th>Id</th>
+            <th>Title</th>
+          </tr>
+        </thead>
+        <tbody>
+          {dataa.filter(val=>{if(val.title.toLowerCase().includes(searchItem.toLowerCase())){
+            return val
+          }}).slice(offset,offset+perPage).map(val=>{
+            return(
+              <tr key={val.id}>
+                <td >{val.userId}</td>
+                <td >{val.id}</td>
+                <td>{val.title}</td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+      <ReactPagination previousLabel={'<-Previous'}
+      nextLabel={'Next->'}
+      pageCount={pageCount}
+      onPageChange={handlePageClick}
       />
     </div>
   )
